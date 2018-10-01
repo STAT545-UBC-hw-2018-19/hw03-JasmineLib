@@ -21,13 +21,17 @@ max_minGDP = gapminder %>%
 
 ** Task 2 Look at the spread of GDP per capita within the continents. **  
 ```{r Task2: Spread GDP}
-gapminder %>% 
+task2= gapminder %>% 
   #filter(year =="2007") %>% 
   group_by(continent) %>% 
   mutate(varGdp = var(gdpPercap),
          meanGdp = mean(gdpPercap)
-         ) %>% 
-  ggplot(aes(continent, gdpPercap)) + geom_violin(fill = "red") + geom_jitter(alpha = 0.2) +scale_y_log10()
+         ) 
+task2 %>% 
+  ggplot(aes(continent, gdpPercap)) + geom_violin(fill = "#FF3366") + geom_jitter(alpha = 0.2) +scale_y_log10() 
+
+task2 %>% 
+  ggplot(aes(gdpPercap)) + geom_histogram(bins=15, fill = "#FF3366", colour = "black") + facet_wrap(~continent) + scale_x_log10()
 
   
   
@@ -47,27 +51,32 @@ gapminder %>%
             lifeExpavg = mean(lifeExp)) %>% 
   ggplot(aes(year)) +
   geom_point(aes(y = mean_lifeExp), colour = "blue") +
-  geom_point(aes(y = lifeExpavg), colour = "red")
+  geom_point(aes(y = lifeExpavg), colour = "red") +theme_classic()
 
   
 ```
 
 ** Task 4 How is life expectancy changing over time on different continents? **  
 ```{r}
-
-lag(c(1,2,3,4))
-
-#gapminder %>% 
- #group_by(continent) %>% 
- # mutate(gainLifeexp = lifeExp-lag(lifeExp)) %>% 
- # summarize(meanbycontinent = mean(gainLifeexp))
-  #mutate(changeLEbyContinent = mean(gainLifeexp))
-  
   
 gapminder %>% 
- group_by(continent) %>% 
-  mutate(meanLifeexp = mean(lifeExp))
+ group_by(continent,year) %>% 
+  mutate(meanLE = mean(lifeExp)) %>% 
+  group_by(country) %>% 
+  mutate(changeLE = meanLE - lag(meanLE)) %>% 
+  filter(continent =="Oceania")
+  #ggplot(aes(year, changeLE, group = continent)) + geom_point() +geom_line(aes(colour = continent)) +facet_wrap(~continent
+  
+gapminder %>% 
+ group_by(continent,year) %>% 
+  mutate(meanLE = mean(lifeExp)) %>% #take the mean LE of that continent in that year. 
+  group_by(country) %>% #re-group only by country because otherwise the lag( ) function does not work as we want.
+  mutate(changeLE = meanLE - lag(meanLE)) %>%  #take the difference in LE
+  ggplot(aes(year, changeLE, group = continent)) + geom_point() +geom_line(aes(colour = continent)) +facet_wrap(~continent) +theme_classic()
 
+# # group_by()
+  ##mutate(meanLE = mean(lifeExp))
+  
   
   #summarize(meanbycontinent = mean(gainLifeexp))
   #mutate(changeLEbyContinent = mean(gainLifeexp))
@@ -76,6 +85,10 @@ gapminder %>%
 #mutate(change_lifeExp =lifeExp - lag(lifeExp))) 
   
 ```
+
+Comments:
+Across continents, all countries have seen an overall increase in life expectancy over time. 
+Some interesting results found:
 
 ** Task 5 Report the absolute and/or relative abundance of countries with low life expectancy over time by continent: Compute some measure of worldwide life expectancy – you decide – a mean or median or some other quantile or perhaps your current age. Then determine how many countries on each continent have a life expectancy less than this benchmark, for each year. **    
 ```{r}
