@@ -4,17 +4,42 @@ STAT545\_hw03\_JLB
 ``` r
 suppressPackageStartupMessages(library(tidyverse)) 
 suppressPackageStartupMessages(library(gapminder))
+library(gridExtra)
 ```
+
+    ## 
+    ## Attaching package: 'gridExtra'
+
+    ## The following object is masked from 'package:dplyr':
+    ## 
+    ##     combine
 
 \*\* Task 1: Get the maximum and minimum of GDP per capita for all continents. \*\*
 
 ``` r
 max_minGDP = gapminder %>%
   group_by(continent) %>% 
-  summarize(minGdp = min(gdpPercap),
-            maxGdp = max(gdpPercap)) %>% 
-  knitr::kable()
+  summarize(minGdp = round(min(gdpPercap),0), #find the max and min GDPs for each continent.
+            maxGdp = round(max(gdpPercap),0))  #round to 0 decimal points (ie to the nearest dollar. )
+
+  
+tbl_maxminGDP = tableGrob(max_minGDP) #use tableGrob to make a nice looking table from the max_minGDP dataframe.
+
+plot_maxminGDP = gapminder %>% 
+  group_by(continent) %>% 
+  filter(gdpPercap == min(gdpPercap) | gdpPercap == max(gdpPercap)) %>% 
+  ggplot(aes(continent, gdpPercap)) + geom_point(aes(colour = gdpPercap)) + 
+  scale_y_log10() +
+  theme_classic()
+  
+
+grid.arrange(plot_maxminGDP, tbl_maxminGDP,
+             ncol=2,
+             as.table=TRUE,
+             heights=c(10,3))
 ```
+
+![](STAT545_hw003_JLB_files/figure-markdown_github/unnamed-chunk-2-1.png)
 
 \*\* Task 2 Look at the spread of GDP per capita within the continents. \*\*
 
@@ -23,20 +48,22 @@ task2= gapminder %>%
   #filter(year =="2007") %>% 
   group_by(continent) %>% 
   mutate(varGdp = var(gdpPercap),
-         meanGdp = mean(gdpPercap)
-         ) 
-task2 %>% 
+         meanGdp = mean(gdpPercap)) 
+
+violin_task2 = task2 %>% 
   ggplot(aes(continent, gdpPercap)) + geom_violin(fill = "#FF3366") + geom_jitter(alpha = 0.2) +scale_y_log10() 
+
+histogram_task2 = task2 %>% 
+  ggplot(aes(gdpPercap)) + geom_histogram(bins=15, fill = "#FF3366", colour = "black") + facet_wrap(~continent) + scale_x_log10()
+
+
+grid.arrange(violin_task2, histogram_task2,
+             ncol=2,
+             as.table=TRUE,
+             heights=c(40,5))
 ```
 
 ![](STAT545_hw003_JLB_files/figure-markdown_github/Task2:%20Spread%20GDP-1.png)
-
-``` r
-task2 %>% 
-  ggplot(aes(gdpPercap)) + geom_histogram(bins=15, fill = "#FF3366", colour = "black") + facet_wrap(~continent) + scale_x_log10()
-```
-
-![](STAT545_hw003_JLB_files/figure-markdown_github/Task2:%20Spread%20GDP-2.png)
 
 \*\* Task 3 Compute a trimmed mean of life expectancy for different years. Or a weighted mean, weighting by population. Just try something other than the plain vanilla mean. \*\*
 
@@ -1924,7 +1951,7 @@ gapminder %>%
   group_by(year) %>% 
   mutate(medLE = median(lifeExp)) %>% 
   #filter(lifeExp < medLE) %>% 
-  ggplot(aes(year, lifeExp)) + geom_jitter(aes(colour = lifeExp < medLE),alpha = 0.33) + facet_wrap(~continent) +
+  ggplot(aes(year, lifeExp)) + geom_jitter(aes(colour = lifeExp < medLE),alpha = 0.33) + facet_grid(continent ~.) +
   ggtitle("Life Expectancy Above and Below Worldwide Median") +
   ylab("Life Expectancy") +
   xlab("Year")
@@ -1933,3 +1960,27 @@ gapminder %>%
 ![](STAT545_hw003_JLB_files/figure-markdown_github/unnamed-chunk-5-1.png)
 
 \*\* Task 6 Find countries with interesting stories. Open-ended and, therefore, hard. Promising but unsuccessful attempts are encouraged. This will generate interesting questions to follow up on in class. \*\*
+
+\*\* Try to get table and plot together I did not find that the link provided in the assignment instructions on how to do this was particularly useful. Instead, I found a [tutorial](https://magesblog.com/post/2015-04-14-plotting-tables-alsongside-charts-in-r/) online using the [gridExtra](https://cran.r-project.org/web/packages/gridExtra/vignettes/arrangeGrob.html) package, which allows you to arrange multiple items (plots, text, tables) on a page.
+
+``` r
+table = gapminder %>%
+  group_by(year) %>%
+  summarize(mean_lifeExp = mean(lifeExp, trim = .15)) %>% 
+  tableGrob() 
+  
+plot = gapminder %>%
+  group_by(year) %>%
+  summarize(mean_lifeExp = mean(lifeExp, trim = .2),
+            lifeExpavg = mean(lifeExp)) %>% 
+  ggplot(aes(year)) +
+  geom_point(aes(y = mean_lifeExp), colour = "blue") +
+  geom_point(aes(y = lifeExpavg), colour = "red") +theme_classic()
+
+grid.arrange(plot, table,
+             ncol=2,
+             as.table=TRUE,
+             heights=c(10,1))
+```
+
+![](STAT545_hw003_JLB_files/figure-markdown_github/unnamed-chunk-7-1.png)
