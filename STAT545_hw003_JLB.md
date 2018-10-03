@@ -15,17 +15,17 @@ suppressPackageStartupMessages(library(gridExtra))
 ```
 
 In this homework, I tackle tasks 1-5.
+I struggled with Task \#3, but showed my efforts for feedback. Please consider Tasks 1,2,4,5 for grading.
 As part of the additional challenge, I tried my best to get plots and tables together:
 I did not find that the link provided in the assignment instructions on how to do this was particularly useful. Instead, I found a [tutorial](https://magesblog.com/post/2015-04-14-plotting-tables-alsongside-charts-in-r/) online using the [gridExtra](https://cran.r-project.org/web/packages/gridExtra/vignettes/arrangeGrob.html) package, which allows you to arrange multiple items (plots, text, tables) on a page.
 
-**Task 1: Get the maximum and minimum of GDP per capita for all continents. **
+**Task 1: Get the maximum and minimum of GDP per capita for all continents.**
 
 ``` r
 max_minGDP = gapminder %>% #name a variable
   group_by(continent) %>% 
   summarize(min = round(min(gdpPercap),0), #find the max and min GDPs for each continent.
             max = round(max(gdpPercap),0))  #rounding to 0 decimal points (ie to the nearest dollar. )
-
   
 tbl_maxminGDP = tableGrob(max_minGDP)  #use tableGrob from gridExtra package to make a nice looking table from the max_minGDP dataframe.
 
@@ -35,9 +35,9 @@ plot_maxminGDP = gapminder %>% #making a plot
   ggplot(aes(continent, gdpPercap)) + geom_point(aes(colour = gdpPercap)) + #add points
   scale_y_log10() + #convert gdpPercap to a log scale 
   theme_classic() + #adjust the look of the graph
-  xlab("Continent")+
+  xlab("Continent") + #add axis titles
   ylab("GDP Per Capita")
-  theme(plot.margin = unit(c(0, 2, 2, 0), "cm")) #need to add margins to the plot, so that when we use grid.arange the plot and table do not overlap. 
+  theme(plot.margin = unit(c(0, 2, 2, 0), "cm")) #add margins to the plot, so that when we use grid.arange the plot and table do not overlap. 
 ```
 
     ## List of 1
@@ -83,7 +83,7 @@ plot_maxminGDP = gapminder %>% #making a plot
   ggplot(aes(continent, gdpPercap)) + geom_point(aes(colour = gdpPercap)) + #add points
   scale_y_log10() + #convert gdpPercap to a log scale 
   theme_classic() + #adjust the look of the graph
-  xlab("Continent")+
+  xlab("Continent")+ #add labels to axes
   ylab("GDP Per Capita")
   theme(plot.margin = unit(c(0, 2, 2, 0), "cm")) #need to add margins to the plot, so that when we use grid.arange the plot and table do not overlap. 
 ```
@@ -109,6 +109,7 @@ grid.arrange(top="Maximum and Minimum Historic GDP Per Capita by Continent in 20
 Conclusion: In 2007, we still see a large gap between the min and max GDP in Asia, however, a similar gap is also observed in Africa and in the Americas. The gap in Europe is much smaller.
 
 **Task 2 Look at the spread of GDP per capita within the continents in 2007. **
+
 The table shows data on the variance (var) and mean GDP per capita within the continents in the year 2007.
 The first plot is a violin plot showing the distribution of GDP per capita by continent in 2007.
 The second plot shows a histogram of the number of countries with various GDP per capita by continent.
@@ -140,16 +141,22 @@ violin_task2 = task2 %>% #call task 2 and make a plot from it
   ggplot(aes(continent, gdpPercap)) + 
   geom_violin(fill = "#FF3366") + 
   geom_jitter(alpha = 0.3) + 
-  scale_y_log10() #log 10 scale for y axis
+  scale_y_log10() + #log 10 scale for y axis 
+  ylab("GDP Per Capita") + #adding axis labels
+  xlab("Continent")
+  
 
 histogram_task2 = task2 %>% #call task 2 and make a histogram plot
   ggplot(aes(gdpPercap)) + 
   geom_histogram(bins=15, fill = "#FF3366", colour = "black") + 
   facet_wrap(~continent) + 
-  scale_x_log10()
+  scale_x_log10() + #put GDP per cap on log scale
+  ylab("Count") + #add labels for axes
+  xlab("GDP per Capita")
+  
 
-
-grid.arrange(top = "Spread of GDP per Capita by Continent in 2007", violin_task2, histogram_task2,
+#create a grid to display graphs side by side.
+grid.arrange(top = "Spread of GDP per Capita by Continent in 2007", violin_task2, histogram_task2, 
              ncol=2,
              widths = c(50,50),
              as.table=TRUE,
@@ -159,13 +166,16 @@ grid.arrange(top = "Spread of GDP per Capita by Continent in 2007", violin_task2
 ![](STAT545_hw003_JLB_files/figure-markdown_github/Task2:%20Spread%20GDP-1.png)
 
 Conclusion:
-There are some interesting points to be taken away: - In Africa, and Asia, there seem to be two groups of countries, one group with higher GDP, and one group with lower GDP. - in the Americas, and Oceania (which only has two countries), there seems to be one main group, with some outliers on either end of the Americas. - Europe shows a shift towards higher GDPs in all countries, though there is a group of countries with lower GDP.
+There are some interesting points to be taken away:
+- In Africa, and Asia, there seem to be two groups of countries, one group with higher GDP, and one group with lower GDP.
+- in the Americas, and Oceania (which only has two countries), there seems to be one main group, with some outliers on either end of the Americas.
+- Europe shows a shift towards higher GDPs in all countries, though there is a group of countries with lower GDP.
 
 The histogram is helpful for quantifying the number of countries with a particular GDP. For example, Europe has over 13 countries with a GDP over 10000.
 
 **Task 3 Compute a trimmed mean of life expectancy for different years.**
 
-I will find the 30% trimmed mean life expectancy.
+I will find the 30% trimmed mean life expectancy for different years.
 
 ``` r
 #normally I would remove redundancy between the data going into table and plot, but for clarity, I showed the entire process as I was having difficulty:
@@ -211,7 +221,7 @@ LE_over_time_plot1 = gapminder %>%
   mutate(meanLE = mean(lifeExp)) %>% #compute mean life life expectancy per continent for that year.
   ggplot(aes(year, meanLE)) + #call ggplot
   geom_point( aes(shape= continent), na.rm = TRUE) + #add data points
-  geom_line(aes(colour = continent)) + #add line through data
+  geom_line(aes(colour = continent), na.rm = TRUE) + #add line through data
   ggtitle("Mean Life Expectancy ") +
   ylab("Mean Life Expectancy (Years)") +
   xlab("Year") +
@@ -225,7 +235,7 @@ LE_over_time_plot2 = gapminder %>%
   mutate(changeLE = meanLE - lag(meanLE)) %>%  #take the difference in mean LE - this is done over time, as the data is organized as such.
   ggplot(aes(year, changeLE, ymin = -1)) + #call ggplot
   geom_point(na.rm = TRUE) + #add the data points
-  geom_line(aes(colour = continent)) + #add connecting lines
+  geom_line(aes(colour = continent), na.rm = TRUE) + #add connecting lines
   facet_wrap(~continent) + 
   geom_line(y=0) +
   theme_classic() +
@@ -241,13 +251,13 @@ LE_over_time_plot2 = gapminder %>%
              heights=c(17,8))
 ```
 
-    ## Warning: Removed 142 rows containing missing values (geom_path).
-
 ![](STAT545_hw003_JLB_files/figure-markdown_github/Change%20in%20Life%20Expectancy%20over%20Time-1.png)
 
 Conclusion:
-Across continents, all countries have seen an overall increase in life expectancy over time.
-Plotting absolute change in life expectancy over time gives an idea of the rate of change over time. For example, while life expectancy in the Americas has increased year over year, the rate at which it is doing so is decreasing. Meanwhile, in Europe and Oceania the rate of increase in life expectancy has stayed relatively constant around +1 year since 1962. The only continent that has seen a decrease in life expectancy year over year in this data set is Africa, where there was a decrease in average life expectancy in the year 2002.
+- Across continents, all countries have seen an overall increase in life expectancy over time.
+- Plotting absolute change in life expectancy over time gives an idea of the rate of change over time. For example, while life expectancy in the Americas has increased year over year, the rate at which it is doing so is decreasing.
+- Meanwhile, in Europe and Oceania the rate of increase in life expectancy has stayed relatively constant around +1 year since 1962.
+- The only continent that has seen a decrease in life expectancy year over year in this data set is Africa, where there was a decrease in average life expectancy in the year 2002.
 
 **Task 5 Report the absolute and/or relative abundance of countries with low life expectancy over time by continent:**
 
@@ -258,14 +268,6 @@ I chose to compute the median worldwide life expectancy per year. I want to see 
 medLE = gapminder %>%
   group_by(year) %>% 
   summarize(medLE = median(lifeExp))
-
-#Also tried: 
-#gapminder %>% 
-#  group_by(year) %>% 
- # mutate(medLE = median(lifeExp)) %>% 
-  #group_by(continent, year) %>% 
-  #mutate(n = num(lifeExp < medLE)) %>% 
-# knitr::kable()
 
 numBelow_medLE = gapminder %>% 
   group_by(year) %>% 
@@ -341,4 +343,8 @@ numBelow_medLE
 | Europe    |  1997|    1|
 | Europe    |  2007|    1|
 
-Conclusion: In blue are countries where the life expectancy is below the worldwide median for that year. Interestingly, over time, most countries in Europe and all in Oceania have an average life expectancy higher than the worldwide median. In contrast, most countries in Africa fall below the median life expectancy, and interestingly, the spread of life expectancy appears to have spread out over time. In America, the spread of life expectancy decreases, and the number of countries falling below the median stays relatively constant.
+Conclusion:
+- In blue are countries where the life expectancy is below the worldwide median for that year.
+- Interestingly, over time, most countries in Europe and all in Oceania have an average life expectancy higher than the worldwide median.
+- In contrast, most countries in Africa fall below the median life expectancy, and interestingly, the spread of life expectancy appears to have spread out over time.
+- In America, the spread of life expectancy decreases, and the number of countries falling below the median stays relatively constant.
