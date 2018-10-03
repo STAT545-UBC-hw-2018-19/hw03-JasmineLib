@@ -290,7 +290,7 @@ rel_abundance_lowLEplot = gapminder %>%
 rel_abundance_lowLEplot
 ```
 
-![](STAT545_hw003_JLB_files/figure-markdown_github/unnamed-chunk-2-1.png)
+![](STAT545_hw003_JLB_files/figure-markdown_github/Task%205-1.png)
 
 ``` r
 numBelow_medLE

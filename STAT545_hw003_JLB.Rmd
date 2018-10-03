@@ -237,7 +237,7 @@ Conclusion:
 **Task 5 Report the absolute and/or relative abundance of countries with low life expectancy over time by continent:**      
 
 I chose to compute the median worldwide life expectancy per year. I want to see how many countries on each continent have a life expectancy less than the median life expectancy (medLE) for each year.   
-```{r}
+```{r Task 5}
 #medLE is the median life expectancy worldwide for each year.
 medLE = gapminder %>%
   group_by(year) %>% 
