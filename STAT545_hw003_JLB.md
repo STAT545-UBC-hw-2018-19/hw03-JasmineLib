@@ -108,7 +108,7 @@ grid.arrange(top="Maximum and Minimum Historic GDP Per Capita by Continent in 20
 
 Conclusion: In 2007, we still see a large gap between the min and max GDP in Asia, however, a similar gap is also observed in Africa and in the Americas. The gap in Europe is much smaller.
 
-**Task 2 Look at the spread of GDP per capita within the continents in 2007. **
+**Task 2 Look at the spread of GDP per capita within the continents in 2007.**
 
 The table shows data on the variance (var) and mean GDP per capita within the continents in the year 2007.
 The first plot is a violin plot showing the distribution of GDP per capita by continent in 2007.
@@ -173,7 +173,7 @@ There are some interesting points to be taken away:
 
 The histogram is helpful for quantifying the number of countries with a particular GDP. For example, Europe has over 13 countries with a GDP over 10000.
 
-**Task 3 Compute a trimmed mean of life expectancy for different years.**
+**Task 3 Compute a trimmed mean of life expectancy for different years**
 
 I will find the 30% trimmed mean life expectancy for different years.
 
@@ -210,7 +210,7 @@ Conclusion:
 - I was unsure if the trim() function was trimming data in order of high to low years, or by life expectancy. If I added arrange(lifeExp) the values stay the same, suggesting that this is not the case.
 - It appears from our data that the change in mean life expectancy is more affected by countries with the extremes (high or low) values in years starting at 1992.
 
-**Task 4 How is life expectancy changing over time on different continents? **
+**Task 4 How is life expectancy changing over time on different continents?**
 
 The first plot shows the overall trend of average life expectancy over time per continent.
 The second plot shows the **absolute change** in life expectancy year over year per continent

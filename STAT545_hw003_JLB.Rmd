@@ -92,7 +92,8 @@ grid.arrange(top="Maximum and Minimum Historic GDP Per Capita by Continent in 20
   
   Conclusion: In 2007, we still see a large gap between the min and max GDP in Asia, however, a similar gap is also observed in Africa and in the Americas. The gap in Europe is much smaller.   
   
-**Task 2 Look at the spread of GDP per capita within the continents in 2007.**     
+**Task 2 Look at the spread of GDP per capita within the continents in 2007.**
+
   
 The table shows data on the variance (var) and mean GDP per capita within the continents in the year 2007.   
 The first plot is a violin plot showing the distribution of GDP per capita by continent in 2007.     
@@ -146,7 +147,7 @@ grid.arrange(top = "Spread of GDP per Capita by Continent in 2007", violin_task2
   
 The histogram is helpful for quantifying the number of countries with a particular GDP. For example, Europe has over 13 countries with a GDP over 10000. 
 
-**Task 3 Compute a trimmed mean of life expectancy for different years.**  
+**Task 3 Compute a trimmed mean of life expectancy for different years**  
 
 I will find the 30% trimmed mean life expectancy for different years.
 ```{r Task 3 Trimmed Life Expectancy }
