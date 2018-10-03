@@ -64,7 +64,7 @@ Interesting findings:
 
 In order to get more relevant data, I filtered out the previous to select only data from the year 2007:
 
-**Task 1 Continued. **
+**Task 1 Continued.**
 
 ``` r
 max_minGDP = gapminder %>% #name a variable
