@@ -119,9 +119,9 @@ The second plot shows a histogram of the number of countries with various GDP pe
 task2= gapminder %>% #name a variable for task 2
   filter(year =="2007") %>% 
   group_by(continent) %>% 
-  mutate(varGdp = var(gdpPercap),
-         meanGdp = mean(gdpPercap),
-         stddev = sqrt(varGdp))
+  mutate(varGdp = round(var(gdpPercap),0), #create new variables, round to 0 decimal places
+         meanGdp = round(mean(gdpPercap),0),
+         stddev = round(sqrt(varGdp),0))
 
 tabletask2 = task2 %>% #This table shows the mean GDP and variance in GDP for each continent in the year 2007. 
   select(continent, varGdp, meanGdp, stddev) %>% 
@@ -130,13 +130,13 @@ tabletask2 = task2 %>% #This table shows the mean GDP and variance in GDP for ea
 tabletask2 #print table
 ```
 
-| continent |     varGdp|    meanGdp|     stddev|
-|:----------|----------:|----------:|----------:|
-| Asia      |  200362251|  12473.027|  14154.937|
-| Europe    |  139248020|  25054.482|  11800.340|
-| Africa    |   13091107|   3089.033|   3618.163|
-| Americas  |   94346435|  11003.032|   9713.209|
-| Oceania   |   42784565|  29810.188|   6540.991|
+| continent |     varGdp|  meanGdp|  stddev|
+|:----------|----------:|--------:|-------:|
+| Asia      |  200362251|    12473|   14155|
+| Europe    |  139248020|    25054|   11800|
+| Africa    |   13091107|     3089|    3618|
+| Americas  |   94346435|    11003|    9713|
+| Oceania   |   42784565|    29810|    6541|
 
 ``` r
 violin_task2 = task2 %>% #call task 2 and make a plot from it
