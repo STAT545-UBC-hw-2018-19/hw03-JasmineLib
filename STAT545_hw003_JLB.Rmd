@@ -149,7 +149,7 @@ The histogram is helpful for quantifying the number of countries with a particul
 **Task 3 Compute a trimmed mean of life expectancy for different years.**  
 
 I will find the 30% trimmed mean life expectancy for different years.
-```{r Task Trimmed Life Expectancy }
+```{r Task 3 Trimmed Life Expectancy }
 
 #normally I would remove redundancy between the data going into table and plot, but for clarity, I showed the entire process as I was having difficulty:
 

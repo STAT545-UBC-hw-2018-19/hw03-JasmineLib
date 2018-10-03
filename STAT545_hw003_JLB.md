@@ -201,7 +201,7 @@ grid.arrange(top = "Global Mean Trimmed Life Expectancy Over Time",trimmedLE_plo
              heights=c(14,3))
 ```
 
-![](STAT545_hw003_JLB_files/figure-markdown_github/Task%20Trimmed%20Life%20Expectancy-1.png)
+![](STAT545_hw003_JLB_files/figure-markdown_github/Task%203%20Trimmed%20Life%20Expectancy-1.png)
 
 In red is the global average life expectancy, untrimmed.
 In blue is the global 30% trimmed average life expectancy.
