@@ -230,7 +230,7 @@ LE_over_time_plot1 = gapminder %>%
   theme_classic()
 
 
-LE_over_time_plot2 = gapminder %>% 
+Abs_change_LE_over_time_plot2 = gapminder %>% 
  group_by(continent,year) %>% 
   mutate(meanLE = mean(lifeExp)) %>% #take the mean LE of that continent in that year. 
   group_by(country) %>% #re-group only by country because otherwise the lag( ) function does not work as we want.
@@ -246,7 +246,7 @@ LE_over_time_plot2 = gapminder %>%
   xlab("Year")
 
 
-  grid.arrange(LE_over_time_plot1, LE_over_time_plot2, #use grid arrange the two plots together.
+  grid.arrange(LE_over_time_plot1, Abs_change_LE_over_time_plot2, #use grid arrange the two plots together.
              ncol=2,
              widths=c(30,40),
              as.table=TRUE,

@@ -50,7 +50,6 @@ grid.arrange(top="Maximum and Minimum Historic GDP Per Capita by Continent",plot
              as.table=TRUE,
              heights=c(25,5)) #adjust heights
 ```
-
   
   Interesting findings:  
 - Asia has the largest historic spread of GDP per capita out of all the continents. However, this data would be more meaningful if we were looking at a specific year.   
@@ -88,8 +87,6 @@ grid.arrange(top="Maximum and Minimum Historic GDP Per Capita by Continent in 20
              as.table=TRUE,
              heights=c(25,5)) #adjust heights
 ```
-
-
   
   Conclusion: In 2007, we still see a large gap between the min and max GDP in Asia, however, a similar gap is also observed in Africa and in the Americas. The gap in Europe is much smaller.   
   
@@ -139,7 +136,6 @@ grid.arrange(top = "Spread of GDP per Capita by Continent in 2007", violin_task2
              heights=c(20,5))
   
 ```
-
   
   Conclusion:  
   There are some interesting points to be taken away:   
@@ -207,7 +203,7 @@ LE_over_time_plot1 = gapminder %>%
   theme_classic()
 
 
-LE_over_time_plot2 = gapminder %>% 
+Abs_change_LE_over_time_plot2 = gapminder %>% 
  group_by(continent,year) %>% 
   mutate(meanLE = mean(lifeExp)) %>% #take the mean LE of that continent in that year. 
   group_by(country) %>% #re-group only by country because otherwise the lag( ) function does not work as we want.
@@ -223,14 +219,13 @@ LE_over_time_plot2 = gapminder %>%
   xlab("Year")
 
 
-  grid.arrange(LE_over_time_plot1, LE_over_time_plot2, #use grid arrange the two plots together.
+  grid.arrange(LE_over_time_plot1, Abs_change_LE_over_time_plot2, #use grid arrange the two plots together.
              ncol=2,
              widths=c(30,40),
              as.table=TRUE,
              heights=c(17,8))
 ```
-  
-     
+       
 Conclusion:    
 - Across continents, all countries have seen an overall increase in life expectancy over time.     
 - Plotting absolute change in life expectancy over time gives an idea of the rate of change over time. For example, while life expectancy in the Americas has increased year over year, the rate at which it is doing so is decreasing.   
@@ -269,8 +264,7 @@ numBelow_medLE
 
   
 ```
-
-
+     
    Conclusion:   
 - In blue are countries where the life expectancy is below the worldwide median for that year.   
 - Interestingly, over time, most countries in Europe and all in Oceania have an average life expectancy higher than the worldwide median.  
