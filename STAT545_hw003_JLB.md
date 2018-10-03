@@ -1,66 +1,90 @@
 STAT545\_hw03\_JLB
 ================
 
+#### Jasmine's Homework 3 Assignment
+
+##### Load Packages
+
+Note: In this homework, I installed another library called gridExtra.
+To dowload this library, you will need to run install.packages("gridExtra") in the console.
+
 ``` r
 suppressPackageStartupMessages(library(tidyverse)) 
 suppressPackageStartupMessages(library(gapminder))
-library(gridExtra)
+suppressPackageStartupMessages(library(gridExtra))
 ```
 
-    ## 
-    ## Attaching package: 'gridExtra'
-
-    ## The following object is masked from 'package:dplyr':
-    ## 
-    ##     combine
+In this homework, I tackle tasks 1-5.
+As part of the additional challenge, I tried my best to get plots and tables together:
+I did not find that the link provided in the assignment instructions on how to do this was particularly useful. Instead, I found a [tutorial](https://magesblog.com/post/2015-04-14-plotting-tables-alsongside-charts-in-r/) online using the [gridExtra](https://cran.r-project.org/web/packages/gridExtra/vignettes/arrangeGrob.html) package, which allows you to arrange multiple items (plots, text, tables) on a page.
 
 \*\* Task 1: Get the maximum and minimum of GDP per capita for all continents. \*\*
 
 ``` r
-max_minGDP = gapminder %>%
+max_minGDP = gapminder %>% #name a variable
   group_by(continent) %>% 
-  summarize(minGdp = round(min(gdpPercap),0), #find the max and min GDPs for each continent.
-            maxGdp = round(max(gdpPercap),0))  #round to 0 decimal points (ie to the nearest dollar. )
+  summarize(min = round(min(gdpPercap),0), #find the max and min GDPs for each continent.
+            max = round(max(gdpPercap),0))  #rounding to 0 decimal points (ie to the nearest dollar. )
 
   
-tbl_maxminGDP = tableGrob(max_minGDP) #use tableGrob to make a nice looking table from the max_minGDP dataframe.
+tbl_maxminGDP = tableGrob(max_minGDP)  #use tableGrob from gridExtra package to make a nice looking table from the max_minGDP dataframe.
 
 plot_maxminGDP = gapminder %>% 
-  group_by(continent) %>% 
-  filter(gdpPercap == min(gdpPercap) | gdpPercap == max(gdpPercap)) %>% 
-  ggplot(aes(continent, gdpPercap)) + geom_point(aes(colour = gdpPercap)) + 
-  scale_y_log10() +
-  theme_classic()
-  
-
-grid.arrange(plot_maxminGDP, tbl_maxminGDP,
-             ncol=2,
-             as.table=TRUE,
-             heights=c(10,3))
+  group_by(continent) %>% #need to regroup by continent here
+  filter(gdpPercap == min(gdpPercap) | gdpPercap == max(gdpPercap)) %>% #filter and keep only those values with the max and min GDP per capita for each continent
+  ggplot(aes(continent, gdpPercap)) + geom_point(aes(colour = gdpPercap)) + #add points
+  scale_y_log10() + #convert gdpPercap to a log scale 
+  theme_classic() + #adjust the look of the graph
+  xlab("Continent")+
+  ylab("GDP Per Capita")
+  theme(plot.margin = unit(c(0, 2, 2, 0), "cm")) #need to add margins to the plot, so that when we use grid.arange the plot and table do not overlap. 
 ```
 
-![](STAT545_hw003_JLB_files/figure-markdown_github/unnamed-chunk-2-1.png)
+    ## List of 1
+    ##  $ plot.margin:Class 'unit'  atomic [1:4] 0 2 2 0
+    ##   .. ..- attr(*, "valid.unit")= int 1
+    ##   .. ..- attr(*, "unit")= chr "cm"
+    ##  - attr(*, "class")= chr [1:2] "theme" "gg"
+    ##  - attr(*, "complete")= logi FALSE
+    ##  - attr(*, "validate")= logi TRUE
+
+``` r
+grid.arrange(top="Maximum and Minimum Historic GDP Per Capita by Continent",plot_maxminGDP, tbl_maxminGDP, #using grid.arrange to have the plot and table on the same graph.
+             ncol=2,
+             widths = c(40,25), #adjust widths of plot and table respectively
+             as.table=TRUE,
+             heights=c(25,5)) #adjust heights
+```
+
+![](STAT545_hw003_JLB_files/figure-markdown_github/max%20min%20GDP-1.png)
 
 \*\* Task 2 Look at the spread of GDP per capita within the continents. \*\*
 
 ``` r
-task2= gapminder %>% 
-  #filter(year =="2007") %>% 
+task2= gapminder %>% #name a variable for task 2
   group_by(continent) %>% 
   mutate(varGdp = var(gdpPercap),
          meanGdp = mean(gdpPercap)) 
 
-violin_task2 = task2 %>% 
-  ggplot(aes(continent, gdpPercap)) + geom_violin(fill = "#FF3366") + geom_jitter(alpha = 0.2) +scale_y_log10() 
+violin_task2 = task2 %>% #call task 2 and make a plot from it
+  ggplot(aes(continent, gdpPercap)) + 
+  geom_violin(fill = "#FF3366") + 
+  geom_jitter(alpha = 0.1) + 
+  scale_y_log10() #log 10 scale for y axis
 
-histogram_task2 = task2 %>% 
-  ggplot(aes(gdpPercap)) + geom_histogram(bins=15, fill = "#FF3366", colour = "black") + facet_wrap(~continent) + scale_x_log10()
+histogram_task2 = task2 %>% #call task 2 and make a histogram plot
+  ggplot(aes(gdpPercap)) + 
+  geom_histogram(bins=15, fill = "#FF3366", colour = "black") + 
+  facet_wrap(~continent) + 
+  scale_x_log10()
+
 
 
 grid.arrange(violin_task2, histogram_task2,
              ncol=2,
+             widths = c(50,50),
              as.table=TRUE,
-             heights=c(40,5))
+             heights=c(20,5))
 ```
 
 ![](STAT545_hw003_JLB_files/figure-markdown_github/Task2:%20Spread%20GDP-1.png)
@@ -69,43 +93,33 @@ grid.arrange(violin_task2, histogram_task2,
 
 ``` r
 #find the 5% trimmed mean of life expectancy. 
-gapminder %>%
-  group_by(year) %>%
-  summarize(mean_lifeExp = mean(lifeExp, trim = .15)) %>% 
-  knitr::kable() 
-```
 
-|  year|  mean\_lifeExp|
-|-----:|--------------:|
-|  1952|       48.19613|
-|  1957|       51.01132|
-|  1962|       53.40731|
-|  1967|       55.80129|
-|  1972|       58.08110|
-|  1977|       60.25699|
-|  1982|       62.32432|
-|  1987|       64.24004|
-|  1992|       65.55227|
-|  1997|       66.45447|
-|  2002|       67.25753|
-|  2007|       68.63648|
-
-``` r
-gapminder %>%
+trimmedLE_tbl = gapminder %>% #make a table of the data using tableGrob function.
   group_by(year) %>%
-  summarize(mean_lifeExp = mean(lifeExp, trim = .2),
+  summarize(mean_lifeExp = round(mean(lifeExp, trim = .2),1)) %>% 
+  tableGrob() 
+  
+trimmedLE_plot = gapminder %>%  #make a plot of the data using ggplot.
+  group_by(year) %>%
+  summarize(mean_lifeExp = round(mean(lifeExp, trim = .2),1),#trim data by .2 (20% of highest and lowest values will be "trimmed")
             lifeExpavg = mean(lifeExp)) %>% 
   ggplot(aes(year)) +
   geom_point(aes(y = mean_lifeExp), colour = "blue") +
   geom_point(aes(y = lifeExpavg), colour = "red") +theme_classic()
+
+grid.arrange(top = "Global Mean Trimmed Life Expectancy Over Time",trimmedLE_plot, trimmedLE_tbl, #arrange plot and table together
+             ncol=2,
+             widths=c(12,5),
+             as.table=TRUE,
+             heights=c(14,3))
 ```
 
-![](STAT545_hw003_JLB_files/figure-markdown_github/unnamed-chunk-3-1.png)
+![](STAT545_hw003_JLB_files/figure-markdown_github/unnamed-chunk-2-1.png)
 
 \*\* Task 4 How is life expectancy changing over time on different continents? \*\*
 
 ``` r
-gapminder %>% 
+LE_over_time_plot1 = gapminder %>% 
   group_by(continent, year) %>% 
   mutate(meanLE = mean(lifeExp)) %>% #compute mean life life expectancy per continent for that year.
   ggplot(aes(year, meanLE)) + #call ggplot
@@ -115,14 +129,11 @@ gapminder %>%
   ylab("Mean Life Expectancy (Years)") +
   xlab("Year") +
   theme_classic()
-```
 
-![](STAT545_hw003_JLB_files/figure-markdown_github/unnamed-chunk-4-1.png)
-
-``` r
 #plotting the change in life expectancy over time gives an idea of the rate of change over time. For example, while life expectancy in the Americas has increased year over year, the rate at which it is doing so is decreasing. Meanwhile, in Europe, the rate of increase in life expectancy has stayed relatively constant around +1 year since 1962. The only continent that has seen a decrease in life expectancy in this data set is Africa, where there was a decrease in average life expectancy in the year 2002. 
 
-gapminder %>% 
+
+LE_over_time_plot2 = gapminder %>% 
  group_by(continent,year) %>% 
   mutate(meanLE = mean(lifeExp)) %>% #take the mean LE of that continent in that year. 
   group_by(country) %>% #re-group only by country because otherwise the lag( ) function does not work as we want.
@@ -133,16 +144,23 @@ gapminder %>%
   facet_wrap(~continent) + 
   geom_line(y=0) +
   theme_classic() +
-  ggtitle("Change in Life Expectancy Since Previous Census Year") +
+  ggtitle("Change in Life Expectancy by Year") +
   ylab("Change in Life Expectancy (Years)") +
   xlab("Year")
+
+
+  grid.arrange(LE_over_time_plot1, LE_over_time_plot2,
+             ncol=2,
+             widths=unit(c(20,20), "cm"),
+             as.table=TRUE,
+             heights=c(10,10))
 ```
 
     ## Warning: Removed 142 rows containing missing values (geom_point).
 
     ## Warning: Removed 142 rows containing missing values (geom_path).
 
-![](STAT545_hw003_JLB_files/figure-markdown_github/unnamed-chunk-4-2.png)
+![](STAT545_hw003_JLB_files/figure-markdown_github/Change%20in%20Life%20Expectancy%20over%20Time-1.png)
 
 Comments: Across continents, all countries have seen an overall increase in life expectancy over time. Some interesting results found:
 
@@ -154,26 +172,8 @@ medLE = gapminder %>%
   group_by(year) %>% 
   summarize(medLE = median(lifeExp))
 #how many countries on each continent have a life expectancy less than medLE for each year?
-medLE
-```
 
-    ## # A tibble: 12 x 2
-    ##     year medLE
-    ##    <int> <dbl>
-    ##  1  1952  45.1
-    ##  2  1957  48.4
-    ##  3  1962  50.9
-    ##  4  1967  53.8
-    ##  5  1972  56.5
-    ##  6  1977  59.7
-    ##  7  1982  62.4
-    ##  8  1987  65.8
-    ##  9  1992  67.7
-    ## 10  1997  69.4
-    ## 11  2002  70.8
-    ## 12  2007  71.9
 
-``` r
 gapminder %>% 
   group_by(year) %>% 
   mutate(medLE = median(lifeExp)) %>% 
@@ -1947,7 +1947,7 @@ gapminder %>%
 | Europe    |  2007|    1|
 
 ``` r
-gapminder %>% 
+rel_abundance_lowLEplot = gapminder %>% 
   group_by(year) %>% 
   mutate(medLE = median(lifeExp)) %>% 
   #filter(lifeExp < medLE) %>% 
@@ -1955,9 +1955,15 @@ gapminder %>%
   ggtitle("Life Expectancy Above and Below Worldwide Median") +
   ylab("Life Expectancy") +
   xlab("Year")
+  
+grid.arrange(rel_abundance_lowLEplot, tableGrob(medLE),
+             ncol=2,
+             as.table=TRUE,
+             widths = c(42,10),
+             heights=c(45,1.5))
 ```
 
-![](STAT545_hw003_JLB_files/figure-markdown_github/unnamed-chunk-5-1.png)
+![](STAT545_hw003_JLB_files/figure-markdown_github/unnamed-chunk-3-1.png)
 
 \*\* Task 6 Find countries with interesting stories. Open-ended and, therefore, hard. Promising but unsuccessful attempts are encouraged. This will generate interesting questions to follow up on in class. \*\*
 
@@ -1983,4 +1989,4 @@ grid.arrange(plot, table,
              heights=c(10,1))
 ```
 
-![](STAT545_hw003_JLB_files/figure-markdown_github/unnamed-chunk-7-1.png)
+![](STAT545_hw003_JLB_files/figure-markdown_github/unnamed-chunk-5-1.png)

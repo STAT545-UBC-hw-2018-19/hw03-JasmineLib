@@ -3,84 +3,112 @@ title: "STAT545_hw03_JLB"
 output: github_document
 ---
 
+####Jasmine's Homework 3 Assignment
+
+##### Load Packages   
+Note: In this homework, I installed another library called gridExtra.   
+To dowload this library, you will need to run install.packages("gridExtra") in the console. 
 
 ```{r}
 suppressPackageStartupMessages(library(tidyverse)) 
 suppressPackageStartupMessages(library(gapminder))
-library(gridExtra)
+suppressPackageStartupMessages(library(gridExtra))
 ```
 
+In this homework, I tackle tasks 1-5.   
+As part of the additional challenge, I tried my best to get plots and tables together:    
+I did not find that the link provided in the assignment instructions on how to do this was particularly useful. 
+Instead, I found a [tutorial](https://magesblog.com/post/2015-04-14-plotting-tables-alsongside-charts-in-r/) online using the [gridExtra](https://cran.r-project.org/web/packages/gridExtra/vignettes/arrangeGrob.html) package, which allows you to arrange multiple items (plots, text, tables) on a page.
 
-** Task 1: Get the maximum and minimum of GDP per capita for all continents. **  
 
-```{r}
-max_minGDP = gapminder %>%
+**Task 1: Get the maximum and minimum of GDP per capita for all continents. **  
+
+```{r max min GDP}
+max_minGDP = gapminder %>% #name a variable
   group_by(continent) %>% 
-  summarize(minGdp = round(min(gdpPercap),0), #find the max and min GDPs for each continent.
-            maxGdp = round(max(gdpPercap),0))  #round to 0 decimal points (ie to the nearest dollar. )
+  summarize(min = round(min(gdpPercap),0), #find the max and min GDPs for each continent.
+            max = round(max(gdpPercap),0))  #rounding to 0 decimal points (ie to the nearest dollar. )
 
   
-tbl_maxminGDP = tableGrob(max_minGDP) #use tableGrob to make a nice looking table from the max_minGDP dataframe.
+tbl_maxminGDP = tableGrob(max_minGDP)  #use tableGrob from gridExtra package to make a nice looking table from the max_minGDP dataframe.
 
 plot_maxminGDP = gapminder %>% 
-  group_by(continent) %>% 
-  filter(gdpPercap == min(gdpPercap) | gdpPercap == max(gdpPercap)) %>% 
-  ggplot(aes(continent, gdpPercap)) + geom_point(aes(colour = gdpPercap)) + 
-  scale_y_log10() +
-  theme_classic()
+  group_by(continent) %>% #need to regroup by continent here
+  filter(gdpPercap == min(gdpPercap) | gdpPercap == max(gdpPercap)) %>% #filter and keep only those values with the max and min GDP per capita for each continent
+  ggplot(aes(continent, gdpPercap)) + geom_point(aes(colour = gdpPercap)) + #add points
+  scale_y_log10() + #convert gdpPercap to a log scale 
+  theme_classic() + #adjust the look of the graph
+  xlab("Continent")+
+  ylab("GDP Per Capita")
+  theme(plot.margin = unit(c(0, 2, 2, 0), "cm")) #need to add margins to the plot, so that when we use grid.arange the plot and table do not overlap. 
+
   
 
-grid.arrange(plot_maxminGDP, tbl_maxminGDP,
+grid.arrange(top="Maximum and Minimum Historic GDP Per Capita by Continent",plot_maxminGDP, tbl_maxminGDP, #using grid.arrange to have the plot and table on the same graph.
              ncol=2,
+             widths = c(40,25), #adjust widths of plot and table respectively
              as.table=TRUE,
-             heights=c(10,3))
+             heights=c(25,5)) #adjust heights
 ```
 
 ** Task 2 Look at the spread of GDP per capita within the continents. **  
 ```{r Task2: Spread GDP}
-task2= gapminder %>% 
-  #filter(year =="2007") %>% 
+task2= gapminder %>% #name a variable for task 2
   group_by(continent) %>% 
   mutate(varGdp = var(gdpPercap),
          meanGdp = mean(gdpPercap)) 
 
-violin_task2 = task2 %>% 
-  ggplot(aes(continent, gdpPercap)) + geom_violin(fill = "#FF3366") + geom_jitter(alpha = 0.2) +scale_y_log10() 
+violin_task2 = task2 %>% #call task 2 and make a plot from it
+  ggplot(aes(continent, gdpPercap)) + 
+  geom_violin(fill = "#FF3366") + 
+  geom_jitter(alpha = 0.1) + 
+  scale_y_log10() #log 10 scale for y axis
 
-histogram_task2 = task2 %>% 
-  ggplot(aes(gdpPercap)) + geom_histogram(bins=15, fill = "#FF3366", colour = "black") + facet_wrap(~continent) + scale_x_log10()
+histogram_task2 = task2 %>% #call task 2 and make a histogram plot
+  ggplot(aes(gdpPercap)) + 
+  geom_histogram(bins=15, fill = "#FF3366", colour = "black") + 
+  facet_wrap(~continent) + 
+  scale_x_log10()
+
 
 
 grid.arrange(violin_task2, histogram_task2,
              ncol=2,
+             widths = c(50,50),
              as.table=TRUE,
-             heights=c(40,5))
+             heights=c(20,5))
   
 ```
 
 ** Task 3 Compute a trimmed mean of life expectancy for different years. Or a weighted mean, weighting by population. Just try something other than the plain vanilla mean. **   
 ```{r}
 #find the 5% trimmed mean of life expectancy. 
-gapminder %>%
+
+trimmedLE_tbl = gapminder %>% #make a table of the data using tableGrob function.
   group_by(year) %>%
-  summarize(mean_lifeExp = mean(lifeExp, trim = .15)) %>% 
-  knitr::kable() 
+  summarize(mean_lifeExp = round(mean(lifeExp, trim = .2),1)) %>% 
+  tableGrob() 
   
-gapminder %>%
+trimmedLE_plot = gapminder %>%  #make a plot of the data using ggplot.
   group_by(year) %>%
-  summarize(mean_lifeExp = mean(lifeExp, trim = .2),
+  summarize(mean_lifeExp = round(mean(lifeExp, trim = .2),1),#trim data by .2 (20% of highest and lowest values will be "trimmed")
             lifeExpavg = mean(lifeExp)) %>% 
   ggplot(aes(year)) +
   geom_point(aes(y = mean_lifeExp), colour = "blue") +
   geom_point(aes(y = lifeExpavg), colour = "red") +theme_classic()
 
+grid.arrange(top = "Global Mean Trimmed Life Expectancy Over Time",trimmedLE_plot, trimmedLE_tbl, #arrange plot and table together
+             ncol=2,
+             widths=c(12,5),
+             as.table=TRUE,
+             heights=c(14,3))
   
 ```
 
 ** Task 4 How is life expectancy changing over time on different continents? **  
-```{r}
+```{r Change in Life Expectancy over Time}
 
-gapminder %>% 
+LE_over_time_plot1 = gapminder %>% 
   group_by(continent, year) %>% 
   mutate(meanLE = mean(lifeExp)) %>% #compute mean life life expectancy per continent for that year.
   ggplot(aes(year, meanLE)) + #call ggplot
@@ -93,7 +121,8 @@ gapminder %>%
 
 #plotting the change in life expectancy over time gives an idea of the rate of change over time. For example, while life expectancy in the Americas has increased year over year, the rate at which it is doing so is decreasing. Meanwhile, in Europe, the rate of increase in life expectancy has stayed relatively constant around +1 year since 1962. The only continent that has seen a decrease in life expectancy in this data set is Africa, where there was a decrease in average life expectancy in the year 2002. 
 
-gapminder %>% 
+
+LE_over_time_plot2 = gapminder %>% 
  group_by(continent,year) %>% 
   mutate(meanLE = mean(lifeExp)) %>% #take the mean LE of that continent in that year. 
   group_by(country) %>% #re-group only by country because otherwise the lag( ) function does not work as we want.
@@ -104,12 +133,16 @@ gapminder %>%
   facet_wrap(~continent) + 
   geom_line(y=0) +
   theme_classic() +
-  ggtitle("Change in Life Expectancy Since Previous Census Year") +
+  ggtitle("Change in Life Expectancy by Year") +
   ylab("Change in Life Expectancy (Years)") +
   xlab("Year")
 
 
-  
+  grid.arrange(LE_over_time_plot1, LE_over_time_plot2,
+             ncol=2,
+             widths=unit(c(20,20), "cm"),
+             as.table=TRUE,
+             heights=c(10,10))
 ```
 
 Comments:
@@ -123,7 +156,7 @@ medLE = gapminder %>%
   group_by(year) %>% 
   summarize(medLE = median(lifeExp))
 #how many countries on each continent have a life expectancy less than medLE for each year?
-medLE
+
 
 gapminder %>% 
   group_by(year) %>% 
@@ -140,7 +173,7 @@ gapminder %>%
   tally() %>% 
   knitr::kable()
  
-gapminder %>% 
+rel_abundance_lowLEplot = gapminder %>% 
   group_by(year) %>% 
   mutate(medLE = median(lifeExp)) %>% 
   #filter(lifeExp < medLE) %>% 
@@ -149,6 +182,13 @@ gapminder %>%
   ylab("Life Expectancy") +
   xlab("Year")
   
+grid.arrange(rel_abundance_lowLEplot, tableGrob(medLE),
+             ncol=2,
+             as.table=TRUE,
+             widths = c(42,10),
+             heights=c(45,1.5))
+
+
   
 ```
 
@@ -161,7 +201,7 @@ gapminder %>%
 
 ** Try to get table and plot together
 I did not find that the link provided in the assignment instructions on how to do this was particularly useful. 
-Instead, I found a [tutorial](https://magesblog.com/post/2015-04-14-plotting-tables-alsongside-charts-in-r/) online using the [gridExtra](https://cran.r-project.org/web/packages/gridExtra/vignettes/arrangeGrob.html) package, which allows you to arrange multiple items (plots, text, tables) on a page. 
+Instead, I found a [tutorial](https://magesblog.com/post/2015-04-14-plotting-tables-alsongside-charts-in-r/) online using the [gridExtra](https://cran.r-project.org/web/packages/gridExtra/vignettes/arrangeGrob.html) package, which allows you to arrange multiple items (plots, text, tables) on a page.
 
 ```{r}
 table = gapminder %>%
