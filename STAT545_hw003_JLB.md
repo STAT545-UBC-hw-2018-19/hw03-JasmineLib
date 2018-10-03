@@ -56,7 +56,7 @@ grid.arrange(top="Maximum and Minimum Historic GDP Per Capita by Continent",plot
              heights=c(25,5)) #adjust heights
 ```
 
-![](STAT545_hw003_JLB_files/figure-markdown_github/max%20min%20GDP-1.png)
+![](STAT545_hw003_JLB_files/figure-markdown_github/Task%201%20part%201%20max%20min%20GDP-1.png)
 
 Interesting findings:
 - Asia has the largest historic spread of GDP per capita out of all the continents. However, this data would be more meaningful if we were looking at a specific year.
@@ -104,7 +104,7 @@ grid.arrange(top="Maximum and Minimum Historic GDP Per Capita by Continent in 20
              heights=c(25,5)) #adjust heights
 ```
 
-![](STAT545_hw003_JLB_files/figure-markdown_github/max%20min%20gdp%202007-1.png)
+![](STAT545_hw003_JLB_files/figure-markdown_github/Task%201%20Part%201%20max%20min%20gdp%202007-1.png)
 
 Conclusion: In 2007, we still see a large gap between the min and max GDP in Asia, however, a similar gap is also observed in Africa and in the Americas. The gap in Europe is much smaller.
 
@@ -163,7 +163,7 @@ grid.arrange(top = "Spread of GDP per Capita by Continent in 2007", violin_task2
              heights=c(20,5))
 ```
 
-![](STAT545_hw003_JLB_files/figure-markdown_github/Task2:%20Spread%20GDP-1.png)
+![](STAT545_hw003_JLB_files/figure-markdown_github/Task2:%20Spread%20of%20GDP-1.png)
 
 Conclusion:
 There are some interesting points to be taken away:
@@ -201,7 +201,7 @@ grid.arrange(top = "Global Mean Trimmed Life Expectancy Over Time",trimmedLE_plo
              heights=c(14,3))
 ```
 
-![](STAT545_hw003_JLB_files/figure-markdown_github/Trimmed%20LE-1.png)
+![](STAT545_hw003_JLB_files/figure-markdown_github/Task%20Trimmed%20Life%20Expectancy-1.png)
 
 In red is the global average life expectancy, untrimmed.
 In blue is the global 30% trimmed average life expectancy.
@@ -251,7 +251,7 @@ LE_over_time_plot2 = gapminder %>%
              heights=c(17,8))
 ```
 
-![](STAT545_hw003_JLB_files/figure-markdown_github/Change%20in%20Life%20Expectancy%20over%20Time-1.png)
+![](STAT545_hw003_JLB_files/figure-markdown_github/Task%204%20Change%20in%20Life%20Expectancy%20over%20Time-1.png)
 
 Conclusion:
 - Across continents, all countries have seen an overall increase in life expectancy over time.
@@ -290,7 +290,7 @@ rel_abundance_lowLEplot = gapminder %>%
 rel_abundance_lowLEplot
 ```
 
-![](STAT545_hw003_JLB_files/figure-markdown_github/Task%205-1.png)
+![](STAT545_hw003_JLB_files/figure-markdown_github/Task%205%20abundance%20of%20countries%20with%20low%20LE-1.png)
 
 ``` r
 numBelow_medLE

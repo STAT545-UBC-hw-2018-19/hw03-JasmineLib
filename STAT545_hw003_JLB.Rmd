@@ -24,7 +24,7 @@ Instead, I found a [tutorial](https://magesblog.com/post/2015-04-14-plotting-tab
 
 **Task 1: Get the maximum and minimum of GDP per capita for all continents.**  
 
-```{r max min GDP}
+```{r Task 1 part 1 max min GDP}
 max_minGDP = gapminder %>% #name a variable
   group_by(continent) %>% 
   summarize(min = round(min(gdpPercap),0), #find the max and min GDPs for each continent.
@@ -58,7 +58,7 @@ grid.arrange(top="Maximum and Minimum Historic GDP Per Capita by Continent",plot
 In order to get more relevant data, I filtered out the previous to select only data from the year 2007:   
 
 **Task 1 Continued. ** 
-```{r max min gdp 2007}
+```{r Task 1 Part 1 max min gdp 2007}
 
 max_minGDP = gapminder %>% #name a variable
   filter(year =="2007") %>% # add a filter for a year.
@@ -97,7 +97,7 @@ grid.arrange(top="Maximum and Minimum Historic GDP Per Capita by Continent in 20
 The table shows data on the variance (var) and mean GDP per capita within the continents in the year 2007.   
 The first plot is a violin plot showing the distribution of GDP per capita by continent in 2007.     
 The second plot shows a histogram of the number of countries with various GDP per capita by continent. 
-```{r Task2: Spread GDP}
+```{r Task2: Spread of GDP}
 task2= gapminder %>% #name a variable for task 2
   filter(year =="2007") %>% 
   group_by(continent) %>% 
@@ -149,7 +149,7 @@ The histogram is helpful for quantifying the number of countries with a particul
 **Task 3 Compute a trimmed mean of life expectancy for different years.**  
 
 I will find the 30% trimmed mean life expectancy for different years.
-```{r Trimmed LE }
+```{r Task Trimmed Life Expectancy }
 
 #normally I would remove redundancy between the data going into table and plot, but for clarity, I showed the entire process as I was having difficulty:
 
@@ -190,7 +190,7 @@ grid.arrange(top = "Global Mean Trimmed Life Expectancy Over Time",trimmedLE_plo
 
 The first plot shows the overall trend of average life expectancy over time per continent.    
 The second plot shows the **absolute change** in life expectancy year over year per continent  
-```{r Change in Life Expectancy over Time}
+```{r Task 4 Change in Life Expectancy over Time}
 
 LE_over_time_plot1 = gapminder %>% 
   group_by(continent, year) %>% 
@@ -237,7 +237,7 @@ Conclusion:
 **Task 5 Report the absolute and/or relative abundance of countries with low life expectancy over time by continent:**      
 
 I chose to compute the median worldwide life expectancy per year. I want to see how many countries on each continent have a life expectancy less than the median life expectancy (medLE) for each year.   
-```{r Task 5}
+```{r Task 5 abundance of countries with low LE}
 #medLE is the median life expectancy worldwide for each year.
 medLE = gapminder %>%
   group_by(year) %>% 
