@@ -5,8 +5,8 @@ STAT545\_hw03\_JLB
 
 ##### Load Packages
 
-Note: In this homework, I installed another library called gridExtra.
-To dowload this library, you will need to run install.packages("gridExtra") in the console.
+**Note:** In this homework, I installed another library called gridExtra.
+To dowload this, you will need to run install.packages("gridExtra") in the console.
 
 ``` r
 suppressPackageStartupMessages(library(tidyverse)) 
@@ -15,9 +15,10 @@ suppressPackageStartupMessages(library(gridExtra))
 ```
 
 In this homework, I tackle tasks 1-5.
-I struggled with Task \#3, but showed my efforts for feedback. Please consider Tasks 1,2,4,5 for grading.
+I found Task \#3 the most difficult, but showed my efforts for feedback. Please consider Tasks 1,2,4,5 for grading.
 As part of the additional challenge, I tried my best to get plots and tables together:
-I did not find that the link provided in the assignment instructions on how to do this was particularly useful. Instead, I found a [tutorial](https://magesblog.com/post/2015-04-14-plotting-tables-alsongside-charts-in-r/) online using the [gridExtra](https://cran.r-project.org/web/packages/gridExtra/vignettes/arrangeGrob.html) package, which allows you to arrange multiple items (plots, text, tables) on a page.
+I did not find that the link provided in the assignment instructions on how to do this was particularly useful.
+Instead, I found a [tutorial](https://magesblog.com/post/2015-04-14-plotting-tables-alsongside-charts-in-r/) online using the [gridExtra](https://cran.r-project.org/web/packages/gridExtra/vignettes/arrangeGrob.html) package, which allows you to arrange multiple items (plots, text, tables) on a page.
 
 **Task 1: Get the maximum and minimum of GDP per capita for all continents.**
 
@@ -110,7 +111,7 @@ Conclusion: In 2007, we still see a large gap between the min and max GDP in Asi
 
 **Task 2 Look at the spread of GDP per capita within the continents in 2007.**
 
-The table shows data on the variance (var) and mean GDP per capita within the continents in the year 2007.
+The table shows data on the variance (var), standard deviation, and mean GDP per capita within the continents in the year 2007.
 The first plot is a violin plot showing the distribution of GDP per capita by continent in 2007.
 The second plot shows a histogram of the number of countries with various GDP per capita by continent.
 
@@ -119,22 +120,23 @@ task2= gapminder %>% #name a variable for task 2
   filter(year =="2007") %>% 
   group_by(continent) %>% 
   mutate(varGdp = var(gdpPercap),
-         meanGdp = mean(gdpPercap))
+         meanGdp = mean(gdpPercap),
+         stddev = sqrt(varGdp))
 
-tabletask2 = task2 %>% 
-  select(continent, varGdp, meanGdp) %>% 
+tabletask2 = task2 %>% #This table shows the mean GDP and variance in GDP for each continent in the year 2007. 
+  select(continent, varGdp, meanGdp, stddev) %>% 
   unique() %>% #filter only unique rows
   knitr::kable()
 tabletask2 #print table
 ```
 
-| continent |     varGdp|    meanGdp|
-|:----------|----------:|----------:|
-| Asia      |  200362251|  12473.027|
-| Europe    |  139248020|  25054.482|
-| Africa    |   13091107|   3089.033|
-| Americas  |   94346435|  11003.032|
-| Oceania   |   42784565|  29810.188|
+| continent |     varGdp|    meanGdp|     stddev|
+|:----------|----------:|----------:|----------:|
+| Asia      |  200362251|  12473.027|  14154.937|
+| Europe    |  139248020|  25054.482|  11800.340|
+| Africa    |   13091107|   3089.033|   3618.163|
+| Americas  |   94346435|  11003.032|   9713.209|
+| Oceania   |   42784565|  29810.188|   6540.991|
 
 ``` r
 violin_task2 = task2 %>% #call task 2 and make a plot from it
